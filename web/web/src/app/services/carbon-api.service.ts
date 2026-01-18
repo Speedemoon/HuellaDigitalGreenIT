@@ -9,14 +9,13 @@ export interface CalculationPayload {
   social_hours_week: number;
   cloud_hours_week: number;
 
-  weeks_per_month: number; // ej. 4.345
-  co2_per_kwh: number;     // ej. 0.45
+  weeks_per_month: number;
+  co2_per_kwh: number;
 
-  // opcional (si tu backend los guarda)
-  total_kwh_month?: number;
-  total_co2_month?: number;
-  level?: string;
-  top_contribution?: string;
+  total_kwh_month: number;
+  total_co2_month: number;
+  level: 'Bajo' | 'Medio' | 'Alto';
+  top_contribution: string;
 }
 
 export interface CalculationRow extends CalculationPayload {
@@ -30,12 +29,11 @@ export class CarbonApiService {
 
   constructor(private http: HttpClient) {}
 
-  // 👉 Si tu backend usa otra ruta (ej. /api/history), cambia aquí:
-  saveCalculation(payload: CalculationPayload): Observable<CalculationRow> {
-    return this.http.post<CalculationRow>(`${this.base}/calculations`, payload);
-  }
-
   getCalculations(): Observable<CalculationRow[]> {
     return this.http.get<CalculationRow[]>(`${this.base}/calculations`);
+  }
+
+  saveCalculation(payload: CalculationPayload): Observable<CalculationRow> {
+    return this.http.post<CalculationRow>(`${this.base}/calculations`, payload);
   }
 }
