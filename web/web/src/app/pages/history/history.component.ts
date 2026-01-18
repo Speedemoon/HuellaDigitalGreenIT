@@ -2,9 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarbonApiService, CalculationRow } from '../../services/carbon-api.service';
 
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-
 type LevelFilter = 'Todos' | 'Bajo' | 'Medio' | 'Alto';
 
 @Component({
@@ -12,100 +9,70 @@ type LevelFilter = 'Todos' | 'Bajo' | 'Medio' | 'Alto';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss'],
+  styleUrl: './history.component.scss',
 })
 export class HistoryComponent implements OnInit {
   rows: CalculationRow[] = [];
   loading = false;
-  errorMsg = '';
+  error = '';
+  filter: LevelFilter = 'Todos';
 
-  filterLevel: LevelFilter = 'Todos';
-
-  constructor(private api: CarbonApiService, private router: Router) {}
+  constructor(private api: CarbonApiService) {}
 
   ngOnInit(): void {
     this.load();
-
-    // ✅ Auto refresca al volver a /historial
-    this.router.events
-      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe(() => {
-        if (this.router.url.includes('/historial')) {
-          this.load();
-        }
-      });
   }
 
-  setFilter(l: LevelFilter): void {
-    this.filterLevel = l;
-  }
-
-  refresh(): void {
-    this.load();
-  }
-
-  private load(): void {
+  load(): void {
     this.loading = true;
-    this.errorMsg = '';
+    this.error = '';
 
     this.api.getCalculations().subscribe({
       next: (data) => {
         const arr = Array.isArray(data) ? data : [];
-        // Ordenar por fecha DESC (más nuevo arriba)
-        this.rows = arr.sort((a, b) => {
-          const da = new Date(a.created_at).getTime();
-          const db = new Date(b.created_at).getTime();
+        arr.sort((a, b) => {
+          const da = new Date(a.created_at ?? 0).getTime();
+          const db = new Date(b.created_at ?? 0).getTime();
           return db - da;
         });
+        this.rows = arr;
         this.loading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error(err);
+        this.rows = [];
         this.loading = false;
-        this.errorMsg = 'No se pudo cargar el historial. Revisa backend/proxy.';
+        this.error = 'No se pudo cargar el historial. Revisa backend/proxy.';
       },
     });
   }
 
+  setFilter(v: LevelFilter): void {
+    this.filter = v;
+  }
+
   get viewRows(): CalculationRow[] {
-    if (this.filterLevel === 'Todos') return this.rows;
-    return this.rows.filter((r) => (r.level || '').toLowerCase() === this.filterLevel.toLowerCase());
+    if (this.filter === 'Todos') return this.rows;
+    return this.rows.filter((r) => (r.level ?? '').toLowerCase() === this.filter.toLowerCase());
   }
 
-  get totalRegistros(): number {
-    return this.viewRows.length;
+  levelClass(level?: string): string {
+    const l = (level ?? '').toLowerCase();
+    if (l === 'alto') return 'pill pill-alto';
+    if (l === 'medio') return 'pill pill-medio';
+    return 'pill pill-bajo';
   }
 
-  get promedioKwh(): number {
-    if (!this.viewRows.length) return 0;
-    const s = this.viewRows.reduce((acc, r) => acc + (Number(r.total_kwh_month) || 0), 0);
-    return s / this.viewRows.length;
-  }
-
-  get promedioCo2(): number {
-    if (!this.viewRows.length) return 0;
-    const s = this.viewRows.reduce((acc, r) => acc + (Number(r.total_co2_month) || 0), 0);
-    return s / this.viewRows.length;
-  }
-
-  get ultimoNivel(): string {
-    return this.viewRows.length ? (this.viewRows[0].level || '-') : '-';
-  }
-
-  formatDate(s: string): string {
-    const d = new Date(s);
-    if (isNaN(d.getTime())) return s;
+  formatDate(v?: string): string {
+    if (!v) return '-';
+    const d = new Date(v);
+    if (Number.isNaN(d.getTime())) return v;
     return d.toLocaleString();
   }
 
-  levelClass(level: string): string {
-    const l = (level || '').toLowerCase();
-    if (l === 'bajo') return 'lvl low';
-    if (l === 'medio') return 'lvl mid';
-    if (l === 'alto') return 'lvl high';
-    return 'lvl';
-  }
-
-  isActiveFilter(l: LevelFilter): boolean {
-    return this.filterLevel === l;
+  fmt(n: any, decimals = 2): string {
+    const v = Number(n);
+    if (!Number.isFinite(v)) return (0).toFixed(decimals);
+    return v.toFixed(decimals);
   }
 }
