@@ -149,5 +149,5 @@ app.get(/^(?!\/api).*/, (req, res) => {
 
 // ====== START ======
 app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
+  console.log(`API running on port ${PORT}`);
 });
