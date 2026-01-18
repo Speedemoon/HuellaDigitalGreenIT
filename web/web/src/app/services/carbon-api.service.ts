@@ -1,44 +1,80 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-export interface CalculationPayload {
-  stream_video_hours_week: number;
-  gaming_hours_week: number;
-  videocalls_hours_week: number;
-  social_hours_week: number;
-  cloud_hours_week: number;
-
-  weeks_per_month: number;
-  co2_per_kwh: number;
-
-  total_kwh_month: number;
-  total_co2_month: number;
-
-  level: string;
-  top_contribution: string;
-}
-
-export interface CalculationRow extends CalculationPayload {
-  id: number;
-  created_at: string;
+export interface HistoryItem {
+  id?: number | string;
+  createdAt?: string;
+  nivel?: 'Bajo' | 'Medio' | 'Alto' | string;
+  co2Kg?: number;
+  kwh?: number;
+  actividad?: string;
+  detalle?: any;
 }
 
 @Injectable({ providedIn: 'root' })
 export class CarbonApiService {
-  private base = '/api';
+  /**
+   * IMPORTANTE:
+   * - En PRODUCCIÓN (Railway): tu front y tu API viven en el MISMO dominio, entonces usa "/api"
+   * - En LOCAL: el proxy.conf.json manda "/api" a http://localhost:3001
+   */
+  private readonly baseUrl = '/api';
 
   constructor(private http: HttpClient) {}
 
-  health(): Observable<any> {
-    return this.http.get(`${this.base}/health`);
+  // ====== FACTORES (si los usas) ======
+  getFactors(): Observable<any> {
+    return this.http
+      .get(`${this.baseUrl}/factors`)
+      .pipe(catchError(this.handleError));
   }
 
-  getCalculations(): Observable<CalculationRow[]> {
-    return this.http.get<CalculationRow[]>(`${this.base}/calculations`);
+  // ====== CALCULO (si lo usas) ======
+  calculate(payload: any): Observable<any> {
+    return this.http
+      .post(`${this.baseUrl}/calculate`, payload)
+      .pipe(catchError(this.handleError));
   }
 
-  saveCalculation(payload: CalculationPayload): Observable<{ ok: boolean; id: number }> {
-    return this.http.post<{ ok: boolean; id: number }>(`${this.base}/calculations`, payload);
+  // ====== HISTORIAL ======
+  getHistory(filter?: 'Todos' | 'Bajo' | 'Medio' | 'Alto' | string): Observable<HistoryItem[]> {
+    let params = new HttpParams();
+    if (filter && filter !== 'Todos') params = params.set('nivel', filter);
+
+    return this.http
+      .get<HistoryItem[]>(`${this.baseUrl}/history`, { params })
+      .pipe(catchError(this.handleError));
+  }
+
+  saveHistory(payload: any): Observable<any> {
+    return this.http
+      .post(`${this.baseUrl}/history`, payload)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteHistory(id: number | string): Observable<any> {
+    return this.http
+      .delete(`${this.baseUrl}/history/${id}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  clearHistory(): Observable<any> {
+    return this.http
+      .delete(`${this.baseUrl}/history`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // ====== ERRORES ======
+  private handleError(err: HttpErrorResponse) {
+    const msg =
+      typeof err.error === 'string'
+        ? err.error
+        : (err.error && err.error.message)
+        ? err.error.message
+        : err.message;
+
+    return throwError(() => new Error(`API ${err.status}: ${msg}`));
   }
 }
