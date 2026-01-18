@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "build": "node -e \"require('fs').mkdirSync('public',{recursive:true})\" && npm --prefix ../web/web install && npm --prefix ../web/web run build && rimraf public/* && cpx \"../web/web/dist/web/browser/**/*\" public"
+    "build": "node -e \"console.log('Railway build: usando frontend precompilado en api/public')\""
   },
   "keywords": [],
   "author": "",
