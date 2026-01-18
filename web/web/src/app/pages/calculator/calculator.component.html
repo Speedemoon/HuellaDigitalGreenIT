@@ -1,0 +1,86 @@
+<section class="calc-page">
+  <div class="calc-container">
+    <header class="calc-header">
+      <h2>Calculadora de Huella Digital</h2>
+      <p>
+        Ingresa tus horas por semana, calcula tu consumo estimado y guárdalo en tu historial.
+      </p>
+    </header>
+
+    <div class="calc-card">
+      <div class="calc-grid">
+        <!-- Col izquierda -->
+        <div class="field">
+          <label>Streaming (video)</label>
+          <input type="number" min="0" step="0.5" [(ngModel)]="stream" placeholder="0" />
+        </div>
+
+        <div class="field">
+          <label>Gaming</label>
+          <input type="number" min="0" step="0.5" [(ngModel)]="gaming" placeholder="0" />
+        </div>
+
+        <div class="field">
+          <label>Videollamadas</label>
+          <input type="number" min="0" step="0.5" [(ngModel)]="videocalls" placeholder="0" />
+        </div>
+
+        <div class="field">
+          <label>Redes sociales</label>
+          <input type="number" min="0" step="0.5" [(ngModel)]="social" placeholder="0" />
+        </div>
+
+        <div class="field">
+          <label>Cloud / Almacenamiento</label>
+          <input type="number" min="0" step="0.5" [(ngModel)]="cloud" placeholder="0" />
+        </div>
+
+        <div class="field">
+          <label>Semanas por mes</label>
+          <input type="number" min="1" step="0.001" [(ngModel)]="weeksPerMonth" />
+        </div>
+
+        <div class="field field-wide">
+          <label>CO₂ por kWh</label>
+          <input type="number" min="0" step="0.01" [(ngModel)]="co2PerKwh" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" (click)="calcular()">Calcular</button>
+
+        <button class="btn dark" [disabled]="saving" (click)="guardar()">
+          {{ saving ? 'Guardando...' : 'Guardar en historial' }}
+        </button>
+
+        <button class="btn ghost" (click)="limpiar()">Limpiar</button>
+
+        <p class="msg" *ngIf="msg">{{ msg }}</p>
+      </div>
+
+      <div class="results">
+        <div class="res">
+          <div class="label">kWh/mes</div>
+          <div class="value">{{ totalKwhMonth | number:'1.2-2' }}</div>
+        </div>
+
+        <div class="res">
+          <div class="label">CO₂/mes</div>
+          <div class="value">{{ totalCo2Month | number:'1.2-2' }}</div>
+        </div>
+
+        <div class="res">
+          <div class="label">Nivel</div>
+          <div class="value">{{ level || '-' }}</div>
+        </div>
+
+        <div class="res">
+          <div class="label">Mayor aporte</div>
+          <div class="value">{{ topContribution || '-' }}</div>
+        </div>
+      </div>
+
+      <p class="tip">Tip: cuando guardes, ve a <b>Historial</b> y actualiza para ver tu registro.</p>
+    </div>
+  </div>
+</section>

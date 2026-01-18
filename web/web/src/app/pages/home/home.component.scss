@@ -1,0 +1,43 @@
+.hero {
+  padding: 26px;
+  border-radius: 20px;
+  background: rgba(0,0,0,.04);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -.3px;
+}
+
+.hero p {
+  margin: 10px 0 0;
+  max-width: 820px;
+  color: rgba(0,0,0,.7);
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+
+.card { border-radius: 18px; }
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 26px; }
+}

@@ -1,0 +1,27 @@
+<mat-toolbar color="primary" class="toolbar">
+  <span class="brand">
+    <mat-icon>eco</mat-icon>
+    Huella Digital GreenIT
+  </span>
+
+  <span class="spacer"></span>
+
+  <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <mat-icon>home</mat-icon>
+    Inicio
+  </a>
+
+  <a mat-button routerLink="/calculadora" routerLinkActive="active">
+    <mat-icon>calculate</mat-icon>
+    Calculadora
+  </a>
+
+  <a mat-button routerLink="/historial" routerLinkActive="active">
+    <mat-icon>history</mat-icon>
+    Historial
+  </a>
+</mat-toolbar>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
