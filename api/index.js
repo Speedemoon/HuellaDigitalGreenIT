@@ -54,10 +54,11 @@ app.post("/api/calculations", (req, res) => {
 const publicDir = path.join(__dirname, "public");
 app.use(express.static(publicDir));
 
-// SPA fallback (IMPORTANTE: va AL FINAL para no romper /api)
-app.get("*", (req, res) => {
+// SPA fallback (Express 5 compatible)
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(publicDir, "index.html"));
 });
+
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, "0.0.0.0", () => {
