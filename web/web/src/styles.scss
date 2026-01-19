@@ -2,3 +2,36 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* ===== NAVBAR responsive (movil) ===== */
+@media (max-width: 600px) {
+
+  /* Hace que la barra pueda acomodarse */
+  nav .nav-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0 10px;
+  }
+
+  /* Opcional: oculta el texto largo del logo para que quepan los 3 botones */
+  nav .brand-logo .brand-text{
+    display: none;
+  }
+
+  /* Los links (Inicio/Calculadora/Historial) se reparten en una segunda fila */
+  nav ul.right{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    margin: 0;
+  }
+
+  nav ul.right li a{
+    padding: 0 6px;
+    font-size: 12px;
+  }
+
+  nav ul.right li a i.material-icons{
+    margin-right: 4px;
+  }
+}

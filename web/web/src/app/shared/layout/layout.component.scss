@@ -20,3 +20,38 @@
   margin: 0 auto;
   padding: 28px 18px;
 }
+
+.navlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* === Mobile navbar: show all links (including Historial) === */
+@media (max-width: 600px) {
+  .toolbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 10px;
+    row-gap: 6px;
+  }
+
+  .brand {
+    width: 100%;
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .navlink {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+    padding: 6px 8px;
+  }
+
+  .navlink mat-icon {
+    margin-right: 2px;
+  }
+}
